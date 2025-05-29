@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>小型超市后台管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>后台管理</span>
+            <span class="user">admin</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li class="active"><a href="admin.html">系统主页</a></li>
+            <li><a href="purchase.html">进货管理</a></li>
+            <li><a href="saleadmin.html">销售管理</a></li>
+            <li><a href="stock.html">库存管理</a></li>
+            <li><a href="memberadmin.html">会员管理</a></li>
+            <li><a href="stats.html">数据统计</a></li>
+            <li><a href="order.html">订单明细</a></li>
+            <li><a href="index.html">前台POS</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="stats">
+            <div class="stat">
+                <div class="num">0</div>
+                <div>今日销售额(元)</div>
+            </div>
+            <div class="stat">
+                <div class="num">0</div>
+                <div>今日订单数(笔)</div>
+            </div>
+            <div class="stat">
+                <div class="num">0</div>
+                <div>销售商品数量</div>
+            </div>
+            <div class="stat">
+                <div class="num">0</div>
+                <div>会员订单数(笔)</div>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="flex-col card">
+                <h3>分类占比分析</h3>
+                <div class="chart-area" id="pieChart"></div>
+            </div>
+            <div class="flex-col card">
+                <h3>7天销售趋势分析</h3>
+                <div class="chart-area" id="lineChart"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>小型超市POS收银系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>前台POS</span>
+            <span class="user">admin</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li class="active"><a href="index.html">收银台</a></li>
+            <li><a href="product.html">商品录入</a></li>
+            <li><a href="member.html">会员管理</a></li>
+            <li><a href="shift.html">交班管理</a></li>
+            <li><a href="sales.html">销售明细</a></li>
+            <li><a href="admin.html">后台管理</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="stats">
+            <div class="stat">
+                <div class="num">0</div>
+                <div>今日销售额(元)</div>
+            </div>
+            <div class="stat">
+                <div class="num">0</div>
+                <div>今日订单数(笔)</div>
+            </div>
+            <div class="stat">
+                <div class="num">0</div>
+                <div>销售商品数量</div>
+            </div>
+            <div class="stat">
+                <div class="num">0</div>
+                <div>会员订单数(笔)</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>收银台</h3>
+            <input type="text" placeholder="扫描条码/输入商品名" style="width: 70%; padding: 8px;">
+            <input type="number" min="1" value="1" style="width: 60px; padding: 8px;">
+            <button style="padding: 8px 16px; margin-left: 8px;">添加</button>
+            <div style="margin-top: 16px;">
+                <table width="100%" border="1" cellspacing="0" cellpadding="6">
+                    <tr>
+                        <th>商品名</th><th>数量</th><th>单价</th><th>小计</th><th>操作</th>
+                    </tr>
+                    <!-- 购物车行 -->
+                </table>
+            </div>
+            <div style="margin-top: 16px;">
+                <span>总金额：<b>￥0.00</b></span>
+                <span style="margin-left: 24px;">会员卡：<input type="text" placeholder="扫描/输入会员卡号"></span>
+            </div>
+            <div style="margin-top: 16px;">
+                <button style="padding: 8px 24px; background: #4caf50; color: #fff;">结账</button>
+                <button style="padding: 8px 24px; margin-left: 12px;">重置</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

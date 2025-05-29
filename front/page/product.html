@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>商品录入 - 小型超市POS系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>前台POS</span>
+            <span class="user">admin</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li><a href="index.html">收银台</a></li>
+            <li class="active"><a href="product.html">商品录入</a></li>
+            <li><a href="member.html">会员管理</a></li>
+            <li><a href="shift.html">交班管理</a></li>
+            <li><a href="sales.html">销售明细</a></li>
+            <li><a href="admin.html">后台管理</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="card">
+            <h3>商品录入</h3>
+            <form style="margin-bottom: 20px;">
+                <input type="text" placeholder="商品编号" required>
+                <input type="text" placeholder="商品名称" required>
+                <input type="text" placeholder="条形码">
+                <input type="number" placeholder="单价" min="0" step="0.01" required>
+                <input type="number" placeholder="库存数量" min="0" required>
+                <button type="submit">添加商品</button>
+            </form>
+            <table>
+                <tr><th>编号</th><th>名称</th><th>条形码</th><th>单价</th><th>库存</th><th>操作</th></tr>
+                <!-- 商品数据行 -->
+            </table>
+        </div>
+    </div>
+</body>
+</html> 

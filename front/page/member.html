@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>会员管理 - 小型超市POS系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>前台POS</span>
+            <span class="user">admin</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li><a href="index.html">收银台</a></li>
+            <li><a href="product.html">商品录入</a></li>
+            <li class="active"><a href="member.html">会员管理</a></li>
+            <li><a href="shift.html">交班管理</a></li>
+            <li><a href="sales.html">销售明细</a></li>
+            <li><a href="admin.html">后台管理</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="card">
+            <h3>会员管理</h3>
+            <form style="margin-bottom: 20px;">
+                <input type="text" placeholder="会员卡号" required>
+                <input type="text" placeholder="会员姓名" required>
+                <input type="text" placeholder="联系方式">
+                <input type="date" placeholder="开卡日期" required>
+                <button type="submit">添加会员</button>
+            </form>
+            <table>
+                <tr><th>卡号</th><th>姓名</th><th>联系方式</th><th>开卡日期</th><th>状态</th><th>操作</th></tr>
+                <!-- 会员数据行 -->
+            </table>
+        </div>
+    </div>
+</body>
+</html> 
