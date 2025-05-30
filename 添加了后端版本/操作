@@ -1,0 +1,98 @@
+# 图书管理系统
+
+这是一个基于 Flask 和 MySQL 的图书管理系统。
+只是简略地实现后端，很多功能还没有完善
+## 系统要求
+
+- Python 3.8+
+- MySQL 5.7+
+- pip（Python包管理器）
+
+## 安装步骤
+
+1. 克隆项目到本地
+
+2. 安装依赖包
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+3. 配置数据库
+   - 创建名为 `library` 的数据库
+   - 修改 `backend/backend/config.py` 中的数据库配置：
+     ```python
+     SQLALCHEMY_DATABASE_URI = 'mysql://用户名:密码@localhost/library'
+     ```
+
+4. 初始化数据库
+```bash
+cd backend
+python init_db.py
+```
+
+## 启动服务
+
+1. 启动后端服务
+```bash
+cd backend
+python app.py
+```
+服务将在 http://localhost:5000 启动
+
+2. 访问系统
+   - 打开浏览器访问 http://localhost:5000
+   - 使用以下账号登录：
+     - 管理员账号：
+       - 用户名：admin
+       - 密码：admin123
+     - 员工账号：
+       - 用户名：staff
+       - 密码：staff123
+
+## 目录结构
+
+```
+├── backend/                # 后端代码
+│   ├── app.py             # 主应用入口
+│   ├── requirements.txt   # 依赖包列表
+│   └── init_db.py        # 数据库初始化脚本
+├── front/                 # 前端代码
+│   ├── css/              # 样式文件
+│   ├── js/               # JavaScript文件
+│   ├── img/              # 图片资源
+│   └── page/             # HTML页面
+└── README.md             # 项目说明文档
+```
+
+## 功能特性
+
+- 用户管理：登录、注册、权限控制
+- 图书管理：添加、修改、删除、查询图书
+- 借阅管理：借书、还书、续借
+- 读者管理：添加、修改、删除读者信息
+- 统计报表：借阅统计、逾期统计
+
+## 注意事项
+
+1. 确保 MySQL 服务已启动
+2. 确保数据库配置正确
+3. 首次运行需要执行数据库初始化脚本
+4. 默认管理员账号请及时修改密码
+
+## 常见问题
+
+1. 如果遇到数据库连接错误，请检查：
+   - MySQL 服务是否启动
+   - 数据库配置是否正确
+   - 数据库用户权限是否正确
+
+2. 如果遇到依赖包安装错误，请尝试：
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+## 技术支持
+
+如有问题，请提交 Issue 或联系技术支持。
