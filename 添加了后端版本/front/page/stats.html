@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>数据统计 - 小型超市后台管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>后台管理</span>
+            <span class="user">admin</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li><a href="admin.html">系统主页</a></li>
+            <li><a href="purchase.html">进货管理</a></li>
+            <li><a href="saleadmin.html">销售管理</a></li>
+            <li><a href="stock.html">库存管理</a></li>
+            <li><a href="memberadmin.html">会员管理</a></li>
+            <li class="active"><a href="stats.html">数据统计</a></li>
+            <li><a href="order.html">订单明细</a></li>
+            <li><a href="index.html">前台POS</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="card">
+            <h3>销售统计</h3>
+            <table>
+                <tr><th>日期</th><th>销售额</th><th>订单数</th><th>商品数量</th><th>毛利</th></tr>
+                <!-- 统计数据行 -->
+            </table>
+        </div>
+        <div class="card">
+            <h3>图表分析</h3>
+            <div class="chart-area"></div>
+        </div>
+    </div>
+</body>
+</html> 

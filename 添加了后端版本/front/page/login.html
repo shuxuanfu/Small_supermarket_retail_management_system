@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - 小型超市POS收银系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .login-container {
+            width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-btn:hover {
+            background: #45a049;
+        }
+        .error-message {
+            color: #f44336;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">小型超市POS收银系统</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">登录</button>
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            try {
+                console.log('正在尝试登录...');
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                console.log('收到服务器响应:', response.status);
+                const data = await response.json();
+                console.log('响应数据:', data);
+                
+                if (response.ok && data.code === 200) {
+                    // 保存token
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    // 根据用户角色跳转到不同页面
+                    if (data.data.user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    errorMessage.textContent = data.message || '登录失败';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                errorMessage.textContent = '服务器连接失败: ' + error.message;
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 

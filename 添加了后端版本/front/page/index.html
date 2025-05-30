@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>小型超市POS收银系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>前台POS</span>
+            <span class="user" id="userInfo"></span>
+            <span class="logout" onclick="logout()">退出</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li class="active"><a href="index.html">收银台</a></li>
+            <li><a href="product.html">商品录入</a></li>
+            <li><a href="member.html">会员管理</a></li>
+            <li><a href="shift.html">交班管理</a></li>
+            <li><a href="sales.html">销售明细</a></li>
+            <li><a href="admin.html">后台管理</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="stats">
+            <div class="stat">
+                <div class="num" id="todaySales">0</div>
+                <div>今日销售额(元)</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="todayOrders">0</div>
+                <div>今日订单数(笔)</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="todayItems">0</div>
+                <div>销售商品数量</div>
+            </div>
+            <div class="stat">
+                <div class="num" id="memberOrders">0</div>
+                <div>会员订单数(笔)</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>收银台</h3>
+            <input type="text" id="barcode" placeholder="扫描条码/输入商品名" style="width: 70%; padding: 8px;">
+            <input type="number" id="quantity" min="1" value="1" style="width: 60px; padding: 8px;">
+            <button onclick="addToCart()" style="padding: 8px 16px; margin-left: 8px;">添加</button>
+            <div style="margin-top: 16px;">
+                <table width="100%" border="1" cellspacing="0" cellpadding="6">
+                    <tr>
+                        <th>商品名</th><th>数量</th><th>单价</th><th>小计</th><th>操作</th>
+                    </tr>
+                    <tbody id="cartItems">
+                        <!-- 购物车行 -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 16px;">
+                <span>总金额：<b id="totalAmount">￥0.00</b></span>
+                <span style="margin-left: 24px;">会员卡：<input type="text" id="memberCard" placeholder="扫描/输入会员卡号"></span>
+            </div>
+            <div style="margin-top: 16px;">
+                <button onclick="checkout()" style="padding: 8px 24px; background: #4caf50; color: #fff;">结账</button>
+                <button onclick="resetCart()" style="padding: 8px 24px; margin-left: 12px;">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('userInfo').textContent = user.name || user.username;
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // 获取今日统计数据
+        async function getTodayStats() {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/stats/today', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('todaySales').textContent = data.sales.toFixed(2);
+                    document.getElementById('todayOrders').textContent = data.orders;
+                    document.getElementById('todayItems').textContent = data.items;
+                    document.getElementById('memberOrders').textContent = data.member_orders;
+                }
+            } catch (error) {
+                console.error('获取统计数据失败:', error);
+            }
+        }
+
+        // 添加商品到购物车
+        async function addToCart() {
+            const barcode = document.getElementById('barcode').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            
+            if (!barcode) {
+                alert('请输入商品条码或名称');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/products/search?q=${barcode}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const product = await response.json();
+                    addProductToCart(product, quantity);
+                    document.getElementById('barcode').value = '';
+                    document.getElementById('quantity').value = 1;
+                } else {
+                    alert('商品不存在');
+                }
+            } catch (error) {
+                console.error('添加商品失败:', error);
+                alert('添加商品失败');
+            }
+        }
+
+        // 将商品添加到购物车显示
+        function addProductToCart(product, quantity) {
+            const cartItems = document.getElementById('cartItems');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${quantity}</td>
+                <td>￥${product.price.toFixed(2)}</td>
+                <td>￥${(product.price * quantity).toFixed(2)}</td>
+                <td><button onclick="removeFromCart(this)">删除</button></td>
+            `;
+            row.dataset.productId = product.id;
+            row.dataset.price = product.price;
+            row.dataset.quantity = quantity;
+            cartItems.appendChild(row);
+            updateTotal();
+        }
+
+        // 从购物车移除商品
+        function removeFromCart(button) {
+            button.closest('tr').remove();
+            updateTotal();
+        }
+
+        // 更新总金额
+        function updateTotal() {
+            const rows = document.getElementById('cartItems').getElementsByTagName('tr');
+            let total = 0;
+            for (let row of rows) {
+                total += parseFloat(row.dataset.price) * parseInt(row.dataset.quantity);
+            }
+            document.getElementById('totalAmount').textContent = `￥${total.toFixed(2)}`;
+        }
+
+        // 重置购物车
+        function resetCart() {
+            document.getElementById('cartItems').innerHTML = '';
+            document.getElementById('barcode').value = '';
+            document.getElementById('quantity').value = 1;
+            document.getElementById('memberCard').value = '';
+            updateTotal();
+        }
+
+        // 结账
+        async function checkout() {
+            const cartItems = document.getElementById('cartItems').getElementsByTagName('tr');
+            if (cartItems.length === 0) {
+                alert('购物车为空');
+                return;
+            }
+
+            const memberCard = document.getElementById('memberCard').value;
+            const items = Array.from(cartItems).map(row => ({
+                product_id: row.dataset.productId,
+                quantity: parseInt(row.dataset.quantity)
+            }));
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        member_id: memberCard || null,
+                        items: items,
+                        payment_method: '现金'
+                    })
+                });
+
+                if (response.ok) {
+                    alert('结账成功');
+                    resetCart();
+                    getTodayStats();
+                } else {
+                    const data = await response.json();
+                    alert(data.message || '结账失败');
+                }
+            } catch (error) {
+                console.error('结账失败:', error);
+                alert('结账失败');
+            }
+        }
+
+        // 页面加载时执行
+        window.onload = function() {
+            checkAuth();
+            getTodayStats();
+        };
+    </script>
+</body>
+</html> 

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>商品录入 - 小型超市POS系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <img src="../img/logo.png" class="logo" alt="logo">
+        <span class="title">超市管理</span>
+        <div class="nav">
+            <span>前台POS</span>
+            <span class="user">admin</span>
+        </div>
+    </div>
+    <div class="sidebar">
+        <ul>
+            <li><a href="index.html">收银台</a></li>
+            <li class="active"><a href="product.html">商品录入</a></li>
+            <li><a href="member.html">会员管理</a></li>
+            <li><a href="shift.html">交班管理</a></li>
+            <li><a href="sales.html">销售明细</a></li>
+            <li><a href="admin.html">后台管理</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="card">
+            <h3>商品录入</h3>
+            <div style="margin-bottom: 20px;">
+                <button onclick="showScannerModal()">扫描条形码</button>
+                <button onclick="showAddProductModal()">手动添加</button>
+            </div>
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>商品编码</th>
+                        <th>商品名称</th>
+                        <th>条形码</th>
+                        <th>类别</th>
+                        <th>价格</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 添加商品模态框 -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <h2>添加商品</h2>
+            <form id="addProductForm">
+                <div>
+                    <label>商品编码：</label>
+                    <input type="text" name="code" required>
+                </div>
+                <div>
+                    <label>商品名称：</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div>
+                    <label>条形码：</label>
+                    <input type="text" name="barcode" required>
+                </div>
+                <div>
+                    <label>类别：</label>
+                    <input type="text" name="category" required>
+                </div>
+                <div>
+                    <label>价格：</label>
+                    <input type="number" name="price" step="0.01" required>
+                </div>
+                <div>
+                    <label>状态：</label>
+                    <select name="status">
+                        <option value="1">正常</option>
+                        <option value="0">下架</option>
+                    </select>
+                </div>
+                <button type="submit">保存</button>
+                <button type="button" onclick="closeModal('addProductModal')">取消</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 扫描条形码模态框 -->
+    <div id="scannerModal" class="modal">
+        <div class="modal-content">
+            <h2>扫描条形码</h2>
+            <div id="scanner-container">
+                <video id="scanner" width="100%" height="auto"></video>
+                <div id="scanner-status">正在初始化摄像头...</div>
+            </div>
+            <button onclick="closeModal('scannerModal')">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let scannerStream = null;
+        let scannerInterval = null;
+
+        // 显示扫描器模态框
+        function showScannerModal() {
+            document.getElementById('scannerModal').style.display = 'block';
+            startScanner();
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'scannerModal') {
+                stopScanner();
+            }
+        }
+
+        // 启动扫描器
+        async function startScanner() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" }  // 修改为前置摄像头
+                });
+                scannerStream = stream;
+                const video = document.getElementById('scanner');
+                video.srcObject = stream;
+                video.play();
+
+                // 开始扫描
+                scannerInterval = setInterval(scanBarcode, 100);
+            } catch (err) {
+                console.error('摄像头访问失败:', err);
+                document.getElementById('scanner-status').textContent = '无法访问摄像头';
+            }
+        }
+
+        // 停止扫描器
+        function stopScanner() {
+            if (scannerStream) {
+                scannerStream.getTracks().forEach(track => track.stop());
+                scannerStream = null;
+            }
+            if (scannerInterval) {
+                clearInterval(scannerInterval);
+                scannerInterval = null;
+            }
+        }
+
+        // 扫描条形码
+        function scanBarcode() {
+            const video = document.getElementById('scanner');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            
+            if (code) {
+                document.getElementById('scanner-status').textContent = '扫描到条形码: ' + code.data;
+                // 将扫描到的条形码填入表单
+                document.querySelector('input[name="barcode"]').value = code.data;
+                // 停止扫描
+                stopScanner();
+                // 关闭扫描器模态框
+                closeModal('scannerModal');
+                // 显示添加商品模态框
+                showAddProductModal();
+            }
+        }
+
+        // 显示添加商品模态框
+        function showAddProductModal() {
+            document.getElementById('addProductModal').style.display = 'block';
+        }
+
+        // 加载商品列表
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                const tbody = document.querySelector('#productTable tbody');
+                tbody.innerHTML = '';
+                
+                data.forEach(product => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${product.code}</td>
+                        <td>${product.name}</td>
+                        <td>${product.barcode}</td>
+                        <td>${product.category}</td>
+                        <td>${product.price}</td>
+                        <td>${product.status === 1 ? '正常' : '下架'}</td>
+                        <td>
+                            <button onclick="editProduct(${product.id})">编辑</button>
+                            <button onclick="deleteProduct(${product.id})">删除</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('加载商品列表失败:', error);
+            }
+        }
+
+        // 添加商品
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const product = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product)
+                });
+                
+                if (response.ok) {
+                    closeModal('addProductModal');
+                    loadProducts();
+                    this.reset();
+                } else {
+                    alert('添加商品失败');
+                }
+            } catch (error) {
+                console.error('添加商品失败:', error);
+                alert('添加商品失败');
+            }
+        });
+
+        // 页面加载完成后加载商品列表
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html> 
